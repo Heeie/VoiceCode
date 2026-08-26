@@ -6,7 +6,6 @@ from tkinter.font import Font
 recognizer = sr.Recognizer()
 running = False
 
-
 #DEVERIA GUARDAR SO O AUDIO
 def ouvir():
     global running
@@ -65,10 +64,8 @@ def parar():
     running = False
 
 
-ctk.set_appearance_mode("System") 
-
+ctk.set_appearance_mode("Dark") 
 ctk.set_default_color_theme("orange.json")
-
 class Aplicação(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -77,7 +74,6 @@ class Aplicação(ctk.CTk):
         
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        
         
         self.barra_Lateral = ctk.CTkFrame(self, width=200)
         self.barra_Lateral.grid(row=0,column=0,sticky="nsew", pady=10)
@@ -95,15 +91,10 @@ class Aplicação(ctk.CTk):
         self.abaSistema()
         
         
-        self.criarPagina()
-        
-    
-    def criarPagina(self):
-        pass
-        
-    
     def abaLateral(self):
-        self.titulo = ctk.CTkLabel(self.barra_Lateral, text="VoiceCode", font=ctk.CTkFont(size=20, weight="bold"))
+        self.titulo = ctk.CTkLabel(self.barra_Lateral, 
+                                   text="VoiceCode", 
+                                   font=ctk.CTkFont(size=20, weight="bold"))
         self.titulo.pack(pady=(30,10), padx=(20,20))
         
         #Tipo de Linguagem
@@ -121,7 +112,14 @@ class Aplicação(ctk.CTk):
         self.radio_Python.select()
         self.radio_Java.pack(pady=10)
         
-        self.switch_Tema = ctk.CTkSwitch(self.barra_Lateral, text="Modo escuro")
+        btn_Testar_Microfone = ctk.CTkButton(self.barra_Lateral,
+                                            text="Testar Microfone",
+                                            font=ctk.CTkFont(size=15),
+                                            command=self.ir_para_Sistema)
+        btn_Testar_Microfone.pack(pady=10, padx=10)
+        
+        self.switch_Tema = ctk.CTkSwitch(self.barra_Lateral, text="Modo escuro",
+                                         command=self.mudarDarkMode)
         self.switch_Tema.pack(pady=(10,10), side="bottom")
         self.switch_Tema.select()
         
@@ -142,7 +140,6 @@ class Aplicação(ctk.CTk):
 
         #self.btn_Parar = ctk.CTkButton(paginaPrincipal, text=texto)
         #self.btn_Parar.pack(pady=(10,10)) 
-    
         
     def abaPreferencias(self):
         paginaPreferencias = self.aba_Principal.tab("Preferências")
@@ -158,14 +155,15 @@ class Aplicação(ctk.CTk):
         
         self.slider_Volume = ctk.CTkSlider(paginaPreferencias, 
                                            from_=0,
-                                           to=100)
+                                           to=100,
+                                           command=self.mudarVolume)
         self.slider_Volume.pack(pady=(20,10))
         self.slider_Volume.set(50)
         
-        label_Value_Volume = ctk.CTkLabel(paginaPreferencias, text="50%")
-        label_Value_Volume.pack()
+        self.label_Value_Volume = ctk.CTkLabel(paginaPreferencias, text="50%")
+        self.label_Value_Volume.pack()
             
-    def abaSistema(self):
+    def abaSistema(self):   
         paginaSistema = self.aba_Principal.tab("Sistema")
         
         label_Select_Micro = ctk.CTkLabel(paginaSistema , 
@@ -196,7 +194,21 @@ class Aplicação(ctk.CTk):
                                         width=200,
                                         height=50)
         btn_Testar_Micro.pack()
+
+    def ir_para_Sistema(self):
+        self.aba_Principal.set("Sistema")
         
+    def mudarDarkMode(self):
+        if self.switch_Tema.get() == 1:
+            ctk.set_appearance_mode("Dark") 
+        else:
+            ctk.set_appearance_mode("Light") 
+            
+    def mudarVolume(self, novo_valor):
+        self.label_Value_Volume.configure(text=f"{int(novo_valor)}%")
+       
+       
+    
         
 janela = Aplicação()
 janela.mainloop()
