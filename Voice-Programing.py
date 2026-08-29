@@ -1,27 +1,58 @@
+import sys
 import threading
-import speech_recognition as sr
+import sounddevice as sd
+import soundfile as sf
+import whisper
+import os
+
 import customtkinter as ctk
 from tkinter.font import Font
 
-recognizer = sr.Recognizer()
+
+model = whisper.load_model("base")
+duracao = 10
+frequencia = 16000   
 running = False
+
+fichEscolhido = "teste.py"
 
 #DEVERIA GUARDAR SO O AUDIO
 def ouvir():
+    print("A ouvir...")
     global running
-    with sr.Microphone() as source:
-        recognizer.adjust_for_ambient_noise(source, duration=1)
-        while running:
-            try:
-                audio = recognizer.listen(source, timeout=1, phrase_time_limit=10)
-                texto = recognizer.recognize_google(audio, language="pt-PT")
+    while running:
+        try:
+            ouv = input("Press ENTER to speak or X to EXIT: ")
+            print(ouv)
+            if ouv == "":
+                audio = sd.rec(
+                    int(duracao * frequencia),
+                    samplerate=frequencia,
+                    channels=1
+                )
+                sd.wait()
+                
+                print("A gravar áudio...")
+                print("Pasta atual:", os.getcwd())
+                print("A processar...")
+
+                sf.write("audio.wav", audio, frequencia)
+                
+                resultado = model.transcribe(
+                    "audio.wav",
+                    language="en"
+                )
+                print("Tu disseste:")
+                print(resultado["text"][:-1] )
                 #print(texto)
-                decidir(texto)
-            except sr.WaitTimeoutError:
-                # Não falou nada
-                pass
-            except Exception as e:
-                print(e)
+                decidir(resultado["text"][:-1])
+                
+            elif ouv=="X" or ouv == "x":
+                break
+
+        except Exception as e:
+            print("Erro:", e)
+       
 
 def decidir(texto):
     if texto == "" or texto == " ":
@@ -44,6 +75,16 @@ def decidir(texto):
     elif opcao_E == "if":
         print("Entrei no if com")
         print(texto)
+        linha = ''
+        #with open(fichEscolhido, "r", encoding="utf-8") as ficheiro:
+        #    linhas = ficheiro.readlines()
+        
+        if argu[2] == "equal" or argu[2] == "equals":
+             
+            linha = f'if {argu[1]} == {argu[3]}:\n'
+            
+        with open( fichEscolhido, "a", encoding="utf-8") as ficheiro:
+            ficheiro.write(linha)
         
     elif opcao_E[0] == "w":
         print("Entrei no while com")
@@ -57,13 +98,17 @@ def iniciar():
     global running
     if not running:
         running = True
-        threading.Thread(target=ouvir, daemon=True).start()
+        threading.Thread(target=ouvir).start()
+        #daemon=True
 
 def parar():
     global running
     running = False
 
+iniciar()
 
+
+"""
 ctk.set_appearance_mode("Dark") 
 ctk.set_default_color_theme("orange.json")
 class Aplicação(ctk.CTk):
@@ -206,9 +251,8 @@ class Aplicação(ctk.CTk):
             
     def mudarVolume(self, novo_valor):
         self.label_Value_Volume.configure(text=f"{int(novo_valor)}%")
-       
-       
-    
-        
+ 
 janela = Aplicação()
-janela.mainloop()
+janela.mainloop()  
+
+"""
