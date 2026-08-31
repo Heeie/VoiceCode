@@ -59,40 +59,69 @@ def decidir(texto):
         return None
     
     argu =  texto.split()
-    prim= argu[0]
-    
     opcoes = ["if", "while", "for", "will", "wild", "try"]
     opcao_E = ""
     for i in opcoes:
-        if i == prim.lower() :
+        if i == argu[0].lower() :
             opcao_E = i
             
+    linha = ''
+    
     if opcao_E == "":
         print("Vou criar variavel")
         print(texto)
-        print(prim +" = " + argu[2] )
+        print(f'{argu[0]} = {argu[2]}')
+        linha = f'{argu[0]} = {argu[2]} \n'
         
     elif opcao_E == "if":
         print("Entrei no if com")
         print(texto)
-        linha = ''
-        #with open(fichEscolhido, "r", encoding="utf-8") as ficheiro:
-        #    linhas = ficheiro.readlines()
         
-        if argu[2] == "equal" or argu[2] == "equals":
-             
+        if argu[2] == "equal" or argu[2] == "equals": 
             linha = f'if {argu[1]} == {argu[3]}:\n'
-            
-        with open( fichEscolhido, "a", encoding="utf-8") as ficheiro:
-            ficheiro.write(linha)
+                
+        elif argu[2] == "lower" or argu[2] == "smaller":
+            linha = f'if {argu[1]} < {argu[3]}:\n'
         
-    elif opcao_E[0] == "w":
-        print("Entrei no while com")
-        print(texto)
-   
+        elif argu[2] == "upper" or argu[2] == "bigger":
+            linha = f'if {argu[1]} > {argu[3]}:\n'
+            
+        
     elif opcao_E == "for":
         print("Entrei no for com")
         print(texto)
+        
+        if argu[2] == "in":
+            linha = f'for {argu[1]} in {argu[3]}:\n'
+        
+        elif argu[2] == "lower" or argu[2] == "smaller":
+            linha = f'for {argu[1]} < {argu[3]}:\n'
+            
+        elif argu[2] == "upper" or argu[2] == "bigger":
+            linha = f'for {argu[1]} > {argu[3]}:\n'
+        
+    
+    elif opcao_E[0] == "w":
+        print("Entrei no while com")
+        print(texto)
+        
+        if len(texto) == 2:
+            if argu[1].lower() == "true":
+                linha = f'while true:\n'
+                
+            elif argu[1].lower() == "false":
+                linha = f'while false:\n'
+        
+        else: 
+            if argu[2] == "lower" or argu[2] == "smaller":
+                linha = f'while {argu[1]} < {argu[3]}:\n'
+                
+            elif argu[2] == "upper" or argu[2] == "bigger":
+                linha = f'while {argu[1]} > {argu[3]}:\n'
+    
+        
+    with open(fichEscolhido, "a", encoding="utf-8") as ficheiro:
+        ficheiro.write(linha)
      
 def iniciar():
     global running
@@ -105,10 +134,10 @@ def parar():
     global running
     running = False
 
-iniciar()
+#iniciar()
 
 
-"""
+
 ctk.set_appearance_mode("Dark") 
 ctk.set_default_color_theme("orange.json")
 class Aplicação(ctk.CTk):
@@ -182,7 +211,8 @@ class Aplicação(ctk.CTk):
         
         self.Text_Viewer = ctk.CTkLabel(paginaPrincipal, height=150, width= 200)
         self.Text_Viewer.pack(pady=10,padx=10)
-
+        
+        
         #self.btn_Parar = ctk.CTkButton(paginaPrincipal, text=texto)
         #self.btn_Parar.pack(pady=(10,10)) 
         
@@ -255,4 +285,4 @@ class Aplicação(ctk.CTk):
 janela = Aplicação()
 janela.mainloop()  
 
-"""
+
